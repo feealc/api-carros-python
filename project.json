@@ -1,0 +1,38 @@
+{
+	"request_fields": [
+		"marca",
+		"modelo",
+		"cor",
+		"ano_fabricacao",
+		"ano_modelo",
+		"combustivel",
+		"potencia",
+		"portas",
+		"lugares",
+		"fipe_codigo"
+	],
+	"car_not_found": {
+		"message": "Carro não encontrado",
+		"status_code": 404
+	},
+	"car_id_invalid": {
+		"message": "ID do carro inválido",
+		"status_code": 404
+	},
+	"body_fields": {
+		"message": "Request sem campos presentes",
+		"status_code": 400
+	},
+	"car_created": {
+		"message": "Carro cadastrado com sucesso",
+		"status_code": 201
+	},
+	"car_updated": {
+		"message": "Carro atualizado com sucesso",
+		"status_code": 200
+	},
+	"car_deleted": {
+		"message": "Carro apagado com sucesso",
+		"status_code": 200
+	}
+}
