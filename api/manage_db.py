@@ -2,10 +2,11 @@ import os
 # import sys
 import traceback
 import sqlite3
-# from datetime import datetime
+from datetime import datetime
+from handle_json_file import HandleJsonFile
 
 
-class ManageDbCars():
+class ManageDbCars:
 
     def __init__(self):
         self.db_name = os.path.join(os.getcwd(), '../', 'cars.db')
@@ -52,15 +53,23 @@ class ManageDbCars():
             print('Erro')
             print(traceback.format_exc())
 
+    def clear_cars_table(self, drop_create_table=False):
+        if drop_create_table:
+            self.drop_cars_table()
+            self.create_cars_table()
+        self.delete_all_cars_data()
+        self.reset_auto_increment()
+
     def drop_cars_table(self):
         try:
-            print('drop_cars_table()')
+            # print('drop_cars_table()')
             self.cursor.execute('''
             DROP TABLE cars;
             ''')
             self.conn.commit()
-        except Exception:
-            print('Erro')
+        except Exception as e:
+            print('Erro ao dropar tabela')
+            print(e)
             print(traceback.format_exc())
 
     def create_cars_table(self):
@@ -84,16 +93,10 @@ class ManageDbCars():
             );
             ''')
             self.conn.commit()
-        except Exception:
-            print('Erro')
+        except Exception as e:
+            print('Erro ao criar tabela')
+            print(e)
             print(traceback.format_exc())
-
-    def clear_cars_table(self, drop_create_table=False):
-        if drop_create_table:
-            self.drop_cars_table()
-            self.create_cars_table()
-        self.delete_all_cars_data()
-        self.reset_auto_increment()
 
     def get_all_cars_data(self):
         try:
@@ -111,54 +114,52 @@ class ManageDbCars():
 
     def delete_all_cars_data(self):
         try:
-            print('delete_all_cars_data()')
+            # print('delete_all_cars_data()')
             self.cursor.execute('''
             DELETE FROM cars;
             ''')
             self.conn.commit()
-        except Exception:
-            print('Erro')
+        except Exception as e:
+            print('Erro ao apagar todos os carros')
+            print(e)
             print(traceback.format_exc())
 
     def reset_auto_increment(self):
         try:
-            print('reset_auto_increment()')
+            # print('reset_auto_increment()')
             self.cursor.execute('''
             UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='cars';
             ''')
             self.conn.commit()
-        except Exception:
-            print('Erro')
+        except Exception as e:
+            print('Erro ao resetar auto increment')
+            print(e)
             print(traceback.format_exc())
 
     def insert_cars_data(self):
         try:
-            print('load_cars_data()')
-            # today_str = datetime.now().strftime('%Y%m%d')
-            today_str = '20200525'
+            test_data = HandleJsonFile.load()['test_data']
+            today_str = datetime.now().strftime('%Y%m%d')
 
-            lista = [
-                ('Fiat', 'Bravo', 'Cinza', 2015, 2016,
-                 'Flex', 128, 4, 5, None, today_str),
-                ('Mercedes', 'Sprinter', 'Cinza', 2012, 2012,
-                 'Diesel', 132, 3, 14, None, today_str),
-                ('Volkswagen', 'Gol', 'Cinza', 2016,
-                 2016, 'Flex', 80, 4, 5, None, today_str),
-                ('Volkswagen', 'Tiguan', 'Branco', 2018,
-                 2018, 'Flex', 160, 4, 5, None, today_str),
-                ('Marca1', 'Modelo1', None, None, None,
-                 None, None, None, None, None, today_str)
-            ]
-            self.cursor.executemany('''
-            INSERT INTO cars
-            (marca, modelo, cor, ano_fabricacao, ano_modelo, combustivel,
-            potencia, portas, lugares, fipe_codigo, data_criacao)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?)
-            ''', lista)
-            self.conn.commit()
-            print('Dados inseridos com sucesso.')
-        except Exception:
-            print('Erro')
+            for data in test_data:
+                query_fields = ''
+                query_values = ''
+                values_list = []
+                for key, value in data.items():
+                    query_fields += key + ','
+                    query_values += '?,'
+                    values_list.append(value)
+                query_fields += 'data_criacao'
+                query_values += '?'
+                values_list.append(today_str)
+                values_tuple = tuple(values_list)
+                query = f'INSERT INTO cars ({query_fields}) VALUES ({query_values})'
+                self.cursor.execute(query, values_tuple)
+                self.conn.commit()
+
+        except Exception as e:
+            print('Erro ao cadastrar carros')
+            print(e)
             print(traceback.format_exc())
 
     def reset_db(self, connect_db=False):
@@ -242,9 +243,6 @@ class ManageDbCars():
 
         if connect_db:
             self.close()
-
-    def func_teste(self):
-        pass
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import os
 import traceback
+import logging
 from flask import Flask, request, jsonify
 from manage_db import ManageDbCars
 from handle_request import HandleRequest
@@ -8,7 +9,6 @@ from handle_request import HandleRequest
 FILE_BD = os.path.join(os.getcwd(), '../', 'cars.db')
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
 
 
 def send_message(fields=None, **kwargs):
@@ -20,6 +20,8 @@ def send_message(fields=None, **kwargs):
             fields[key_message] = 'Internal error'
         if key_status_code not in fields:
             fields[key_status_code] = 500
+        if 'error' in fields:
+            del fields['error']
     else:
         fields = {
             key_message: 'Internal error',
@@ -33,18 +35,17 @@ def send_message(fields=None, **kwargs):
 
 
 @app.route('/api/v1/cars/reset', methods=['GET'])
-def api_clean():
+def api_reset():
     try:
+        req = HandleRequest()
         cars = ManageDbCars()
         cars.reset_db(connect_db=True)
 
-        return send_message({
-            'message': 'Reset realizado com sucesso',
-            'status_code': 200
-        })
-    except Exception:
-        print('Erro reset banco de dados')
+        return req.build_reset_response()
+    except Exception as e:
+        print('Erro no reset banco de dados')
         print(traceback.format_exc())
+        print(e)
         return send_message()
 
 
@@ -95,6 +96,8 @@ def api_create():
             return send_message(result)
 
         result = req.parse_request_insert(body)
+        if 'error' in result:
+            return send_message(result)
         query = result['query']
         values = result['values']
 
@@ -127,6 +130,8 @@ def api_id_put_patch(car_id):
 
         flag_put = request.method == 'PUT'
         result = req.parse_request_update(body, car_id, put_method=flag_put)
+        if 'error' in result:
+            return send_message(result)
         query = result['query']
         values = result['values']
 
@@ -180,4 +185,8 @@ def api_id_delete(car_id):
 
 
 # print(f'FILE_BD [{FILE_BD}]')
-app.run()
+if __name__ == '__main__':
+    # logging.basicConfig(level=logging.DEBUG,
+    #                     format='%(asctime)s %(levelname)8s > %(message)s')
+    app.run(debug=True)
+    # app.run()

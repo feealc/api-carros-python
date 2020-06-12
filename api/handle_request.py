@@ -1,21 +1,17 @@
 import os
 import json
 from datetime import datetime
+from handle_json_file import HandleJsonFile
 
 
-class HandleRequest():
+class HandleRequest:
 
     def __init__(self):
         # print('HandleRequest() init')
         self.__message_key = 'message'
         self.__st_key = 'status_code'
-        self.__load_json_file()
+        self.json_data = HandleJsonFile.load()
         # print(self.json_data)
-
-    def __load_json_file(self):
-        file_name = os.path.join(os.getcwd(), '../', 'project.json')
-        with open(file_name, 'r', encoding='utf-8') as f:
-            self.json_data = json.load(f)
 
     def _get_default_fields(self, key):
         return_dict = {}
@@ -31,9 +27,7 @@ class HandleRequest():
     def valid_car_id(self, car_id):
         json_key = 'car_id_invalid'
         ret_dict = None
-        try:
-            int(car_id)
-        except Exception:
+        if not car_id.isdigit():
             ret_dict = self._get_default_fields(json_key)
 
         return ret_dict
@@ -56,10 +50,13 @@ class HandleRequest():
 
         return ret_dict
 
+    def build_reset_response(self):
+        return self._get_default_fields('bd_reset')
+
     def build_car_created_response(self, car_id):
         ret_dict = self._get_default_fields('car_created')
         ret_dict['id'] = car_id
-        return ret_dict
+        return ret_dict, ret_dict['status_code']
 
     def build_car_updated_response(self):
         return self._get_default_fields('car_updated')
@@ -81,6 +78,11 @@ class HandleRequest():
             if field in body:
                 values_list.append(body[field])
             else:
+                if field == 'marca' or field == 'modelo':
+                    ret_dict = HandleJsonFile.load()['car_missing_field']
+                    ret_dict['message'] = ret_dict['message'].replace('##', field)
+                    ret_dict['error'] = True
+                    return ret_dict
                 values_list.append(None)
 
         query_main += 'data_criacao)'
@@ -110,8 +112,12 @@ class HandleRequest():
                 values_list.append(body[field])
             else:
                 if put_method:
+                    if field == 'marca' or field == 'modelo':
+                        ret_dict = HandleJsonFile.load()['car_missing_field']
+                        ret_dict['message'] = ret_dict['message'].replace('##', field)
+                        ret_dict['error'] = True
+                        return ret_dict
                     query += f'{field} = ?,'
-                    # TODO: se for o campo MARCA ou MODELO, responder campo ausente
                     values_list.append(None)
 
         query += 'data_alteracao = ? WHERE id = ?;'
