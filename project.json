@@ -63,6 +63,13 @@
 		"lugares": null,
 		"fipe_codigo": "Locksat"
 	},
+	"test_data_create_unknown_fields": {
+		"marca": "Rick",
+		"modelo":  "Kate",
+		"cor2": null,
+		"data_criacao": null,
+		"unknown_fields": ["cor2", "data_criacao"]
+	},
 	"test_data_update_put": {
 		"marca": "Javier",
 		"modelo":  "Kevin",
@@ -75,8 +82,26 @@
 		"lugares": null,
 		"fipe_codigo": null
 	},
+	"test_data_update_put_unknown_fields": {
+		"marca": "Javier",
+		"modelo":  "Kevin",
+		"cor":  null,
+		"ano_fabricacao":  2009,
+		"ano_modelo":  2016,
+		"conbustivel":  null,
+		"potencia": null,
+		"portas": null,
+		"lugares": null,
+		"fipecodigo": null,
+		"data_alteracao": null,
+		"unknown_fields": ["conbustivel","fipecodigo", "data_alteracao"]
+	},
 	"test_data_update_patch": {
 		"fipe_codigo": "Castle"
+	},
+	"test_data_update_patch_unknown_fields": {
+		"porta": null,
+		"unknown_fields": ["porta"]
 	},
 	"bd_reset": {
 		"message": "Reset realizado com sucesso",
@@ -109,5 +134,10 @@
 	"car_missing_field": {
 		"message": "Campo ## ausente",
 		"status_code": 400
+	},
+	"car_unknown_field": {
+		"message": "Campo desconhecido no request",
+		"status_code": 400,
+		"unknown_fields": null
 	}
 }
