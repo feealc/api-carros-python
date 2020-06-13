@@ -73,7 +73,7 @@ class MyTest(unittest.TestCase):
             if key in resp_json:
                 self.assertEqual(value, resp_json[key], msg=f'Valor do campo {key} diferente do esperado')
 
-    def test_1_get_reset(self):
+    def test_1_post_reset(self):
         reset_message = HandleJsonFile.load()['bd_reset']
         url = f'{self.base_url}/reset'
         resp = requests.post(url)
@@ -137,6 +137,16 @@ class MyTest(unittest.TestCase):
         resp = requests.post(url, headers=self.headers, data=json.dumps(test_car_data))
         self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
 
+    def test_3_post_create_car_body_unknown_fields(self):
+        test_car_data = HandleJsonFile.load()['test_data_create_unknown_fields']
+        unknown_fields = test_car_data['unknown_fields']
+        del test_car_data['unknown_fields']
+        expected_message = HandleJsonFile.load()['car_unknown_field']
+        expected_message['unknown_fields'] = unknown_fields
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_car_data))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
     def test_4_get_car_id(self):
         test_car = HandleJsonFile.load()['test_data_create']
         test_car = self.fill_car_missing_fields(car=test_car)
@@ -171,8 +181,6 @@ class MyTest(unittest.TestCase):
 
         url = f'{self.base_url}/{self.car_id}'
         resp = requests.get(url)
-        # print(test_car_update)
-        # print(resp.json())
         self.valid_car_json(resp=resp, expected_car=test_car_update)
 
     def test_5_put_update_car_body_invalid(self):
@@ -205,6 +213,16 @@ class MyTest(unittest.TestCase):
         resp = requests.put(url, headers=self.headers, data=json.dumps(test_car_update))
         self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
 
+    def test_5_put_update_car_body_unknown_fields(self):
+        test_car_data = HandleJsonFile.load()['test_data_update_put_unknown_fields']
+        unknown_fields = test_car_data['unknown_fields']
+        del test_car_data['unknown_fields']
+        expected_message = HandleJsonFile.load()['car_unknown_field']
+        expected_message['unknown_fields'] = unknown_fields
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_car_data))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
     def test_5_put_update_car_id_invalid_id(self):
         expected_message = HandleJsonFile.load()['car_id_invalid']
         url = f'{self.base_url}/f3'
@@ -228,6 +246,9 @@ class MyTest(unittest.TestCase):
         test_car_update_patch = HandleJsonFile.load()['test_data_update_patch']
         expected_message = HandleJsonFile.load()['car_updated']
         car_patch = {**test_car_update_orig, **test_car_update_patch}
+        del car_patch['id']
+        del car_patch['data_criacao']
+        del car_patch['data_alteracao']
 
         resp = requests.patch(url, headers=self.headers, data=json.dumps(car_patch))
         self.valid_response_simple(resp=resp, code=200, expected_message=expected_message)
@@ -246,6 +267,16 @@ class MyTest(unittest.TestCase):
         expected_message = HandleJsonFile.load()['body_fields']
         url = f'{self.base_url}/{self.car_id}'
         resp = requests.patch(url, headers=self.headers)
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_body_unknown_fields(self):
+        test_car_data = HandleJsonFile.load()['test_data_update_patch_unknown_fields']
+        unknown_fields = test_car_data['unknown_fields']
+        del test_car_data['unknown_fields']
+        expected_message = HandleJsonFile.load()['car_unknown_field']
+        expected_message['unknown_fields'] = unknown_fields
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_car_data))
         self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
 
     def test_6_patch_update_car_id_invalid_id(self):

@@ -95,6 +95,10 @@ def api_create():
         if result is not None:
             return send_message(result)
 
+        result = req.valid_request_fields(body)
+        if result is not None:
+            return send_message(result)
+
         result = req.parse_request_insert(body)
         if 'error' in result:
             return send_message(result)
@@ -125,6 +129,10 @@ def api_id_put_patch(car_id):
 
         body = request.get_json(silent=True)
         result = req.valid_body_fields(body)
+        if result is not None:
+            return send_message(result)
+
+        result = req.valid_request_fields(body)
         if result is not None:
             return send_message(result)
 

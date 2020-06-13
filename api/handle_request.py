@@ -50,6 +50,22 @@ class HandleRequest:
 
         return ret_dict
 
+    def valid_request_fields(self, body):
+        json_key = 'car_unknown_field'
+        request_fields = HandleJsonFile.load()['request_fields']
+        unknown_fields = []
+        ret_dict = None
+
+        for field in body:
+            if field not in request_fields:
+                unknown_fields.append(field)
+
+        if len(unknown_fields) > 0:
+            ret_dict = self._get_default_fields(json_key)
+            ret_dict['unknown_fields'] = unknown_fields
+
+        return ret_dict
+
     def build_reset_response(self):
         return self._get_default_fields('bd_reset')
 
