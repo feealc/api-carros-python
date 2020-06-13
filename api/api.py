@@ -34,7 +34,7 @@ def send_message(fields=None, **kwargs):
     return jsonify(fields), fields['status_code']
 
 
-@app.route('/api/v1/cars/reset', methods=['GET'])
+@app.route('/api/v1/cars/reset', methods=['POST'])
 def api_reset():
     try:
         req = HandleRequest()

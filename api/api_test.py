@@ -76,7 +76,7 @@ class MyTest(unittest.TestCase):
     def test_1_get_reset(self):
         reset_message = HandleJsonFile.load()['bd_reset']
         url = f'{self.base_url}/reset'
-        resp = requests.get(url)
+        resp = requests.post(url)
         self.valid_response_simple(resp=resp, code=200, expected_message=reset_message)
 
     def test_2_get_all(self):
