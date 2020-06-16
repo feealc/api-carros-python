@@ -45,7 +45,7 @@
 			"ano_fabricacao":  null,
 			"ano_modelo":  null,
 			"combustivel":  null,
-			"potencia": null,
+			"potencia": 100,
 			"portas": null,
 			"lugares": null,
 			"fipe_codigo": null
@@ -102,6 +102,10 @@
 	"test_data_update_patch_unknown_fields": {
 		"porta": null,
 		"unknown_fields": ["porta"]
+	},
+	"dummy_responde": {
+		"message": "brum",
+		"status_code": 200
 	},
 	"bd_reset": {
 		"message": "Reset realizado com sucesso",

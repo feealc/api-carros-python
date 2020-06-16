@@ -50,9 +50,11 @@ class HandleRequest:
 
         return ret_dict
 
-    def valid_request_fields(self, body):
+    def valid_request_fields(self, body, accept_date_fields=False):
         json_key = 'car_unknown_field'
         request_fields = HandleJsonFile.load()['request_fields']
+        if accept_date_fields:
+            request_fields = HandleJsonFile.load()['response_fields']
         unknown_fields = []
         ret_dict = None
 
@@ -79,6 +81,9 @@ class HandleRequest:
 
     def build_car_deleted_response(self):
         return self._get_default_fields('car_deleted')
+
+    def build_dummy_response(self):
+        return self._get_default_fields('dummy_responde')
 
     def parse_request_insert(self, body):
         fields = self.json_data['request_fields']
