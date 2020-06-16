@@ -80,7 +80,6 @@ class MyTest(unittest.TestCase):
         self.valid_response_simple(resp=resp, code=200, expected_message=reset_message)
 
     def test_2_get_all(self):
-        # self.skipTest(reason='skip')
         response_fields = HandleJsonFile.load()['response_fields']
         test_data = HandleJsonFile.load()['test_data']
         url = f'{self.base_url}/all'
@@ -99,13 +98,43 @@ class MyTest(unittest.TestCase):
                     self.assertEqual(resp_car[field], car_data[field])
             car_index += 1
 
+    def test_2_get_all_order_by(self):
+        field_sort = 'potencia'
+        response_fields = HandleJsonFile.load()['response_fields']
+        test_data = HandleJsonFile.load()['test_data']
+        test_data_sorted = sorted(test_data, key=lambda k: k[field_sort])
+        url = f'{self.base_url}/all'
+        resp = requests.get(url, headers=self.headers, data=json.dumps({'order_by': field_sort}))
+        resp_json = resp.json()
+
+        self.assertEqual(len(resp_json), 2)
+        car_index = 0
+        for resp_car in resp_json:
+            car_data = test_data_sorted[car_index]
+            car_data['data_criacao'] = self.get_current_date_int()
+            car_data['data_alteracao'] = None
+            for field in response_fields:
+                self.assertTrue(field in resp_car)
+                if field in resp_car:
+                    self.assertEqual(resp_car[field], car_data[field])
+            car_index += 1
+
+    def test_2_get_all_order_by_unknown_field(self):
+        field_sort = 'campo1'
+        expected_message = HandleJsonFile.load()['car_unknown_field']
+        expected_message['unknown_fields'] = [field_sort]
+        url = f'{self.base_url}/all'
+        resp = requests.get(url, headers=self.headers, data=json.dumps({'order_by': field_sort}))
+
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
     def test_3_post_create_car(self):
         test_data_json = HandleJsonFile.load()['test_data_create']
-        created_message = HandleJsonFile.load()['car_created']
-        created_message['id'] = self.car_id
+        expected_message = HandleJsonFile.load()['car_created']
+        expected_message['id'] = self.car_id
         url = f'{self.base_url}'
         resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
-        self.valid_response_simple(resp=resp, code=201, expected_message=created_message)
+        self.valid_response_simple(resp=resp, code=201, expected_message=expected_message)
 
     def test_3_post_create_car_body_invalid(self):
         expected_message = HandleJsonFile.load()['body_fields']

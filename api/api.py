@@ -52,14 +52,30 @@ def api_reset():
 @app.route('/api/v1/cars/all', methods=['GET'])
 def api_all():
     try:
+        req = HandleRequest()
+        body = request.get_json(silent=True)
+        order_by_field = None
+        if body is not None:
+            if 'order_by' in body:
+                body_fake = {body['order_by']: None}
+                result = req.valid_request_fields(body_fake, accept_date_fields=True)
+                if result is not None:
+                    return send_message(result)
+                order_by_field = body['order_by']
+
+        if order_by_field is None:
+            order_by_field = 'id'
+
         c = ManageDbCars()
         all_cars = c.run_select(connect_db=True,
-                                query='SELECT * FROM cars ORDER BY id')
+                                query=f'SELECT * FROM cars ORDER BY {order_by_field}')
 
         return jsonify(all_cars)
-    except Exception:
+    except Exception as e:
         print('Erro ao consultar todos os carros')
-        print(traceback.format_exc())
+        # print(traceback.format_exc())
+        print(e)
+
         return send_message()
 
 
