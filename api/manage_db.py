@@ -6,76 +6,64 @@ from datetime import datetime
 from handle_json_file import HandleJsonFile
 
 
-class ManageDbCars:
+class Cars:
 
-    def __init__(self):
-        self.db_name = os.path.join(os.getcwd(), '../', 'cars.db')
-        self.table_name = 'cars'
-
-        self.conn = None
-        self.cursor = None
-
-    def __str__(self):
-        return f'ManageDbCars()'
-
-    def connect(self):
-        self.conn = sqlite3.connect(self.db_name)
-        self.conn.row_factory = self.__dict_factory
-        self.cursor = self.conn.cursor()
-
-    def close(self):
-        self.conn.close()
-
-    def __dict_factory(self, cur, row):
-        d = {}
-        for idx, col in enumerate(cur.description):
-            # print(f'__dict_factory() => idx [{idx}] col [{col}]')
-            d[col[0]] = row[idx]
-        return d
-
-    def show_all_tables_and_columns(self):
+    @staticmethod
+    def show_all_tables_and_columns():
         try:
             print('show_all_tables_and_columns()')
+            cars_db = ManageDatabase()
 
-            self.cursor.execute('''
-            SELECT name FROM sqlite_master WHERE type='table' ORDER BY name
-            ''')
+            result = cars_db.run_query(query=f'SELECT name FROM sqlite_master WHERE type="table" ORDER BY name',
+                                       select=True)
 
-            all_tables = self.cursor.fetchall()
-
-            for table in all_tables:
-                print(f'Table: {table[0]}')
-                # print(type(table))
-                self.cursor.execute('PRAGMA table_info({})'.format(table[0]))
-                colunas = [tupla[1] for tupla in self.cursor.fetchall()]
-                print('Colunas:', colunas)
-        except Exception:
-            print('Erro')
+            for table in result:
+                table_name = table['name']
+                if table_name == 'cars':
+                    print(f'Table: {table_name}')
+                    result2 = cars_db.run_query(query=f'PRAGMA table_info({table_name})', select=True)
+                    colunas = [i['name'] for i in result2]
+                    print('Colunas:', colunas)
+        except Exception as e:
+            print('Erro ao mostrar todas as tabelas e campos')
             print(traceback.format_exc())
+            print(e)
 
-    def clear_cars_table(self, drop_create_table=False):
+    @staticmethod
+    def clear_cars_table(drop_create_table=False):
         if drop_create_table:
-            self.drop_cars_table()
-            self.create_cars_table()
-        self.delete_all_cars_data()
-        self.reset_auto_increment()
+            Cars.drop_cars_table()
+            Cars.create_cars_table()
+        Cars.delete_all_cars_data()
+        Cars.reset_auto_increment()
 
-    def drop_cars_table(self):
+    @staticmethod
+    def reset_db():
+        try:
+            Cars.clear_cars_table(drop_create_table=False)
+            Cars.insert_cars_data()
+            # Cars.get_all_cars_data()
+
+        except Exception as e:
+            raise e
+
+    @staticmethod
+    def drop_cars_table():
         try:
             # print('drop_cars_table()')
-            self.cursor.execute('''
-            DROP TABLE cars;
-            ''')
-            self.conn.commit()
+            cars_db = ManageDatabase()
+            cars_db.run_query(query=f'DROP TABLE cars')
+
         except Exception as e:
             print('Erro ao dropar tabela')
+            # print(traceback.format_exc())
             print(e)
-            print(traceback.format_exc())
 
-    def create_cars_table(self):
+    @staticmethod
+    def create_cars_table():
         try:
             # print('create_cars_table()')
-            self.cursor.execute('''
+            query = '''
             CREATE TABLE cars (
                     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     marca TEXT NOT NULL,
@@ -90,56 +78,57 @@ class ManageDbCars:
                     fipe_codigo TEXT,
                     data_criacao INTEGER NOT NULL,
                     data_alteracao INTEGER
-            );
-            ''')
-            self.conn.commit()
+            );'''
+            cars_db = ManageDatabase()
+            cars_db.run_query(query=query)
         except Exception as e:
             print('Erro ao criar tabela')
+            # print(traceback.format_exc())
             print(e)
-            print(traceback.format_exc())
 
-    def get_all_cars_data(self):
+    @staticmethod
+    def get_all_cars_data():
         try:
-            print('get_all_cars_data()')
-            self.cursor.execute('''
-            SELECT * FROM cars;
-            ''')
+            # print('get_all_cars_data()')
+            cars_db = ManageDatabase()
+            q_result = cars_db.run_query(query=f'SELECT * FROM cars', select=True)
 
-            for linha in self.cursor.fetchall():
+            for linha in q_result:
                 print(linha)
         except Exception as e:
-            print('Erro')
+            print('Erro ao consultar todos os carros')
+            # print(traceback.format_exc())
             print(e)
-            print(traceback.format_exc())
 
-    def delete_all_cars_data(self):
+    @staticmethod
+    def delete_all_cars_data():
         try:
             # print('delete_all_cars_data()')
-            self.cursor.execute('''
-            DELETE FROM cars;
-            ''')
-            self.conn.commit()
+            cars_db = ManageDatabase()
+            cars_db.run_query(query=f'DELETE FROM cars')
         except Exception as e:
             print('Erro ao apagar todos os carros')
+            # print(traceback.format_exc())
             print(e)
-            print(traceback.format_exc())
 
-    def reset_auto_increment(self):
+    @staticmethod
+    def reset_auto_increment():
         try:
             # print('reset_auto_increment()')
-            self.cursor.execute('''
-            UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='cars';
-            ''')
-            self.conn.commit()
+            cars_db = ManageDatabase()
+            cars_db.run_query(query=f'UPDATE SQLITE_SEQUENCE SET SEQ = 0 WHERE NAME = "cars"')
         except Exception as e:
             print('Erro ao resetar auto increment')
+            # print(traceback.format_exc())
             print(e)
-            print(traceback.format_exc())
 
-    def insert_cars_data(self):
+    @staticmethod
+    def insert_cars_data():
         try:
+            # print('insert_cars_data()')
             test_data = HandleJsonFile.load()['test_data']
             today_str = datetime.now().strftime('%Y%m%d')
+            cars_db = ManageDatabase()
 
             for data in test_data:
                 query_fields = ''
@@ -154,109 +143,100 @@ class ManageDbCars:
                 values_list.append(today_str)
                 values_tuple = tuple(values_list)
                 query = f'INSERT INTO cars ({query_fields}) VALUES ({query_values})'
-                self.cursor.execute(query, values_tuple)
-                self.conn.commit()
+                cars_db.run_query(query=query, values=values_tuple)
 
         except Exception as e:
             print('Erro ao cadastrar carros')
+            # print(traceback.format_exc())
             print(e)
-            print(traceback.format_exc())
 
-    def reset_db(self, connect_db=False):
-        try:
-            if connect_db:
-                self.connect()
-
-            if self.conn:
-                self.clear_cars_table(drop_create_table=False)
-                self.reset_auto_increment()
-                self.insert_cars_data()
-                # self.get_all_cars_data()
-
-            if connect_db:
-                self.close()
-        except Exception as e:
-            raise e
-
-    def get_car(self, connect_db=False, car_id=None):
-        # print('ManageDbCars => run_select()')
-        if connect_db:
-            self.connect()
-
+    @staticmethod
+    def get_car(car_id=None):
         if car_id is None:
             return None
 
-        if self.conn:
-            query = f'SELECT * FROM cars WHERE id = {car_id};'
-            # print(f'ManageDbCars => get_car() - query [{query}]')
-            result = self.cursor.execute(query).fetchone()
-            # print(result)
-
-        if connect_db:
-            self.close()
+        cars_db = ManageDatabase()
+        query = f'SELECT * FROM cars WHERE id = {car_id}'
+        result = cars_db.run_query(query=query, select=True, fetch_one=True)
 
         return result
 
-    def run_select(self, connect_db=False, query=None, values=None):
-        # print('ManageDbCars => run_select()')
-        if connect_db:
-            self.connect()
+    @staticmethod
+    def run_query(select=False, query=None, values=None, fetch_one=False):
+        cars_db = ManageDatabase()
+        if select:
+            return cars_db.run_query(query=query, select=select, values=values, fetch_one=fetch_one)
+        else:
+            cars_db.run_query(query=query, select=select, values=values, fetch_one=fetch_one)
 
-        result = None
+
+class ManageDatabase:
+
+    def __init__(self):
+        self.db_name = os.path.join(os.getcwd(), '../', 'cars.db')
+        self.conn = None
+        self.cursor = None
+        self.__connet()
+
+    @staticmethod
+    def __dict_factory(cur, row):
+        d = {}
+        for idx, col in enumerate(cur.description):
+            # print(f'__dict_factory() => idx [{idx}] col [{col}]')
+            d[col[0]] = row[idx]
+        return d
+
+    def __connet(self):
+        self.conn = sqlite3.connect(self.db_name)
+        self.conn.row_factory = ManageDatabase.__dict_factory
+        self.cursor = self.conn.cursor()
+
+    def __close(self):
+        if self.conn is not None:
+            self.conn.close()
+            self.conn = None
+            self.cursor = None
+
+    def run_query(self, select=False, query=None, values=None, fetch_one=False):
+        self.__connet()
+        q_result = None
 
         if query is None:
-            return result
+            return q_result
 
-        if self.conn:
-            if not query.endswith(';'):
-                query += ';'
-            # print(f'ManageDbCars => run_select() - query [{query}]')
+        if not query.endswith(';'):
+            query += ';'
+
+        if select:
             if values is not None:
-                result = self.cursor.execute(query, values).fetchall()
+                if fetch_one:
+                    q_result = self.cursor.execute(query, values).fetchone()
+                else:
+                    q_result = self.cursor.execute(query, values).fetchall()
             else:
-                result = self.cursor.execute(query).fetchall()
-
-        if connect_db:
-            self.close()
-
-        return result
-
-    def run_insert_update_delete(self, connect_db=False,
-                                 query=None, values=None):
-        # print('ManageDbCars => run_insert_update_delete()')
-        if connect_db:
-            self.connect()
-
-        if query is None:
-            return
-
-        if self.conn:
-            if not query.endswith(';'):
-                query += ';'
-
-            # print(f'ManageDbCars => run_insert_update_delete() - query
-            # [{query}] values [{values}]')
-            self.cursor.execute(query, values)
+                if fetch_one:
+                    q_result = self.cursor.execute(query).fetchone()
+                else:
+                    q_result = self.cursor.execute(query).fetchall()
+        else:
+            if values is not None:
+                self.cursor.execute(query, values)
+            else:
+                self.cursor.execute(query)
             self.conn.commit()
 
-            return self.conn.total_changes
+        self.__close()
 
-        if connect_db:
-            self.close()
+        if select:
+            return q_result
 
 
 if __name__ == "__main__":
-    cars = ManageDbCars()
+    # db = ManageDatabase()
 
-    cars.connect()
-    # cars.drop_cars_table()
-    # cars.create_cars_table()
-    # cars.delete_all_cars_data()
-    # cars.reset_auto_increment()
-    # cars.show_all_tables_and_columns()
-    cars.clear_cars_table(drop_create_table=True)
-    cars.insert_cars_data()
+    # Cars.show_all_tables_and_columns()
+    Cars.reset_db()
+    # Cars.drop_cars_table()
+    # Cars.create_cars_table()
 
-    cars.get_all_cars_data()
-
-    cars.close()
+    print(Cars.get_car(2))

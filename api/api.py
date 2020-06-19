@@ -1,8 +1,8 @@
 import os
-import traceback
-import logging
+# import traceback
+# import logging
 from flask import Flask, request, jsonify
-from manage_db import ManageDbCars
+from manage_db import Cars
 from handle_request import HandleRequest
 
 
@@ -37,14 +37,12 @@ def send_message(fields=None, **kwargs):
 @app.route('/api/v1/cars/reset', methods=['POST'])
 def api_reset():
     try:
-        req = HandleRequest()
-        cars = ManageDbCars()
-        cars.reset_db(connect_db=True)
+        Cars.reset_db()
 
-        return req.build_reset_response()
+        return HandleRequest.build_reset_response()
     except Exception as e:
-        print('Erro no reset banco de dados')
-        print(traceback.format_exc())
+        print('Erro no reset do banco de dados')
+        # print(traceback.format_exc())
         print(e)
         return send_message()
 
@@ -52,13 +50,12 @@ def api_reset():
 @app.route('/api/v1/cars/all', methods=['GET'])
 def api_all():
     try:
-        req = HandleRequest()
         body = request.get_json(silent=True)
         order_by_field = None
         if body is not None:
             if 'order_by' in body:
                 body_fake = {body['order_by']: None}
-                result = req.valid_request_fields(body_fake, accept_date_fields=True)
+                result = HandleRequest.valid_request_fields(body_fake, accept_date_fields=True)
                 if result is not None:
                     return send_message(result)
                 order_by_field = body['order_by']
@@ -66,9 +63,7 @@ def api_all():
         if order_by_field is None:
             order_by_field = 'id'
 
-        c = ManageDbCars()
-        all_cars = c.run_select(connect_db=True,
-                                query=f'SELECT * FROM cars ORDER BY {order_by_field}')
+        all_cars = Cars.run_query(query=f'SELECT * FROM cars ORDER BY {order_by_field}', select=True)
 
         return jsonify(all_cars)
     except Exception as e:
@@ -82,22 +77,20 @@ def api_all():
 @app.route('/api/v1/cars/<car_id>', methods=['GET'])
 def api_id_get(car_id):
     try:
-        req = HandleRequest()
-        result = req.valid_car_id(car_id)
+        result = HandleRequest.valid_car_id(car_id)
         if result is not None:
             return send_message(result)
 
-        c = ManageDbCars()
-        car = c.get_car(connect_db=True, car_id=car_id)
+        car = Cars.get_car(car_id=car_id)
 
-        result = req.valid_car_found(car)
+        result = HandleRequest.valid_car_found(car)
         if result is not None:
             return send_message(result)
 
         return jsonify(car)
     except Exception as e:
         print('Erro ao consultar carro')
-        print(traceback.format_exc())
+        # print(traceback.format_exc())
         print(e)
         return send_message()
 
@@ -105,32 +98,30 @@ def api_id_get(car_id):
 @app.route('/api/v1/cars', methods=['POST'])
 def api_create():
     try:
-        req = HandleRequest()
         body = request.get_json(silent=True)
-        result = req.valid_body_fields(body)
+        result = HandleRequest.valid_body_fields(body)
         if result is not None:
             return send_message(result)
 
-        result = req.valid_request_fields(body)
+        result = HandleRequest.valid_request_fields(body)
         if result is not None:
             return send_message(result)
 
-        result = req.parse_request_insert(body)
+        result = HandleRequest.parse_request_insert(body)
         if 'error' in result:
             return send_message(result)
         query = result['query']
         values = result['values']
 
-        c = ManageDbCars()
-        c.run_insert_update_delete(connect_db=True, query=query, values=values)
+        Cars.run_query(query=query, values=values)
 
-        line = c.run_select(connect_db=True, query='SELECT max(id) FROM cars')
+        line = Cars.run_query(query='SELECT max(id) FROM cars', select=True)
         id_new = line[0]['max(id)']
 
-        return req.build_car_created_response(id_new)
+        return HandleRequest.build_car_created_response(id_new)
     except Exception as e:
         print('Erro ao cadastrar carro')
-        print(traceback.format_exc())
+        # print(traceback.format_exc())
         print(e)
         return send_message()
 
@@ -138,44 +129,37 @@ def api_create():
 @app.route('/api/v1/cars/<car_id>', methods=['PUT', 'PATCH'])
 def api_id_put_patch(car_id):
     try:
-        req = HandleRequest()
-        result = req.valid_car_id(car_id)
+        result = HandleRequest.valid_car_id(car_id)
         if result is not None:
             return send_message(result)
 
         body = request.get_json(silent=True)
-        result = req.valid_body_fields(body)
+        result = HandleRequest.valid_body_fields(body)
         if result is not None:
             return send_message(result)
 
-        result = req.valid_request_fields(body)
+        result = HandleRequest.valid_request_fields(body)
         if result is not None:
             return send_message(result)
 
         flag_put = request.method == 'PUT'
-        result = req.parse_request_update(body, car_id, put_method=flag_put)
+        result = HandleRequest.parse_request_update(body, car_id, put_method=flag_put)
         if 'error' in result:
             return send_message(result)
         query = result['query']
         values = result['values']
 
-        c = ManageDbCars()
-
-        car = c.get_car(connect_db=True, car_id=car_id)
-        result = req.valid_car_found(car)
+        car = Cars.get_car(car_id=car_id)
+        result = HandleRequest.valid_car_found(car)
         if result is not None:
             return send_message(result)
 
-        result = c.run_insert_update_delete(connect_db=True,
-                                            query=query, values=values)
+        Cars.run_query(query=query, values=values)
 
-        if result != 1:
-            raise Exception()
-
-        return req.build_car_updated_response()
+        return HandleRequest.build_car_updated_response()
     except Exception as e:
         print('Erro ao atualizar carro')
-        print(traceback.format_exc())
+        # print(traceback.format_exc())
         print(e)
         return send_message()
 
@@ -183,32 +167,25 @@ def api_id_put_patch(car_id):
 @app.route('/api/v1/cars/<car_id>', methods=['DELETE'])
 def api_id_delete(car_id):
     try:
-        req = HandleRequest()
-        result = req.valid_car_id(car_id)
+        result = HandleRequest.valid_car_id(car_id)
         if result is not None:
             return send_message(result)
 
-        c = ManageDbCars()
-        car = c.get_car(connect_db=True, car_id=car_id)
-        result = req.valid_car_found(car)
+        car = Cars.get_car(car_id=car_id)
+        result = HandleRequest.valid_car_found(car)
         if result is not None:
             return send_message(result)
 
-        query = f'DELETE FROM cars WHERE id = ?'
-        result = c.run_insert_update_delete(connect_db=True,
-                                            query=query, values=(car_id,))
-        if result != 1:
-            raise Exception()
+        Cars.run_query(query=f'DELETE FROM cars WHERE id = {car_id}')
 
-        return req.build_car_deleted_response()
+        return HandleRequest.build_car_deleted_response()
     except Exception as e:
         print('Erro ao apagar carro')
-        print(traceback.format_exc())
+        # print(traceback.format_exc())
         print(e)
         return send_message()
 
 
-# print(f'FILE_BD [{FILE_BD}]')
 if __name__ == '__main__':
     # logging.basicConfig(level=logging.DEBUG,
     #                     format='%(asctime)s %(levelname)8s > %(message)s')

@@ -1,57 +1,37 @@
-import os
-import json
 from datetime import datetime
 from handle_json_file import HandleJsonFile
 
 
 class HandleRequest:
 
-    def __init__(self):
-        # print('HandleRequest() init')
-        self.__message_key = 'message'
-        self.__st_key = 'status_code'
-        self.json_data = HandleJsonFile.load()
-        # print(self.json_data)
-
-    def _get_default_fields(self, key):
-        return_dict = {}
-        if key in self.json_data:
-            fields = self.json_data[key]
-            if self.__message_key in fields:
-                return_dict[self.__message_key] = fields[self.__message_key]
-            if self.__st_key in fields:
-                return_dict[self.__st_key] = fields[self.__st_key]
-
-        return return_dict
-
-    def valid_car_id(self, car_id):
-        json_key = 'car_id_invalid'
+    @staticmethod
+    def valid_car_id(car_id):
         ret_dict = None
         if not car_id.isdigit():
-            ret_dict = self._get_default_fields(json_key)
+            ret_dict = HandleJsonFile.load()['car_id_invalid']
 
         return ret_dict
 
-    def valid_car_found(self, car):
-        json_key = 'car_not_found'
+    @staticmethod
+    def valid_car_found(car):
         ret_dict = None
 
         if car is None:
-            ret_dict = self._get_default_fields(json_key)
+            ret_dict = HandleJsonFile.load()['car_not_found']
 
         return ret_dict
 
-    def valid_body_fields(self, body):
-        json_key = 'body_fields'
+    @staticmethod
+    def valid_body_fields(body):
         ret_dict = None
 
         if body is None:
-            ret_dict = self._get_default_fields(json_key)
+            ret_dict = HandleJsonFile.load()['body_fields']
 
         return ret_dict
 
-    def valid_request_fields(self, body, accept_date_fields=False):
-        json_key = 'car_unknown_field'
+    @staticmethod
+    def valid_request_fields(body, accept_date_fields=False):
         request_fields = HandleJsonFile.load()['request_fields']
         if accept_date_fields:
             request_fields = HandleJsonFile.load()['response_fields']
@@ -63,31 +43,36 @@ class HandleRequest:
                 unknown_fields.append(field)
 
         if len(unknown_fields) > 0:
-            ret_dict = self._get_default_fields(json_key)
+            ret_dict = HandleJsonFile.load()['car_unknown_field']
             ret_dict['unknown_fields'] = unknown_fields
 
         return ret_dict
 
-    def build_reset_response(self):
-        return self._get_default_fields('bd_reset')
+    @staticmethod
+    def build_reset_response():
+        return HandleJsonFile.load()['bd_reset']
 
-    def build_car_created_response(self, car_id):
-        ret_dict = self._get_default_fields('car_created')
+    @staticmethod
+    def build_car_created_response(car_id):
+        ret_dict = HandleJsonFile.load()['car_created']
         ret_dict['id'] = car_id
         return ret_dict, ret_dict['status_code']
 
-    def build_car_updated_response(self):
-        return self._get_default_fields('car_updated')
+    @staticmethod
+    def build_car_updated_response():
+        return HandleJsonFile.load()['car_updated']
 
-    def build_car_deleted_response(self):
-        return self._get_default_fields('car_deleted')
+    @staticmethod
+    def build_car_deleted_response():
+        return HandleJsonFile.load()['car_deleted']
 
-    def build_dummy_response(self):
-        return self._get_default_fields('dummy_responde')
+    @staticmethod
+    def build_dummy_response():
+        return HandleJsonFile.load()['dummy_responde']
 
-    def parse_request_insert(self, body):
-        fields = self.json_data['request_fields']
-        ret_dict = None
+    @staticmethod
+    def parse_request_insert(body):
+        fields = HandleJsonFile.load()['request_fields']
 
         query_main = 'INSERT INTO cars ('
         query_values = 'VALUES ('
@@ -112,17 +97,15 @@ class HandleRequest:
         values_list.append(datetime.now().strftime('%Y%m%d'))
         values_tuple = tuple(values_list)
 
-        # print(query)
-        # print(values_tuple)
         ret_dict = {
             'query': query,
             'values': values_tuple
         }
         return ret_dict
 
-    def parse_request_update(self, body, car_id, put_method=False):
-        fields = self.json_data['request_fields']
-        ret_dict = None
+    @staticmethod
+    def parse_request_update(body, car_id, put_method=False):
+        fields = HandleJsonFile.load()['request_fields']
 
         query = 'UPDATE cars SET '
         values_list = []
@@ -146,8 +129,6 @@ class HandleRequest:
         values_list.append(car_id)
         values_tuple = tuple(values_list)
 
-        # print(query)
-        # print(values_tuple)
         ret_dict = {
             'query': query,
             'values': values_tuple
