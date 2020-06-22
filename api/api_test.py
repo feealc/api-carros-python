@@ -176,6 +176,176 @@ class MyTest(unittest.TestCase):
         resp = requests.post(url, headers=self.headers, data=json.dumps(test_car_data))
         self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
 
+    def test_3_post_create_car_field_anofabricacao_bigger(self):
+        field = 'ano_fabricacao'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = 20185
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_len_bigger']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_anofabricacao_empty(self):
+        field = 'ano_fabricacao'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_anofabricacao_not_numeric(self):
+        field = 'ano_fabricacao'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = '20f16'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_anomodelo_bigger(self):
+        field = 'ano_modelo'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = '02019'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_len_bigger']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_anomodelo_empty(self):
+        field = 'ano_modelo'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_anomodelo_not_numeric(self):
+        field = 'ano_modelo'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = 'a1991'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_combustivel_empty(self):
+        field = 'combustivel'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_cor_empty(self):
+        field = 'cor'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_fipecodigo_empty(self):
+        field = 'fipe_codigo'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_lugares_empty(self):
+        field = 'lugares'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_lugares_not_numeric(self):
+        field = 'lugares'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = '2020 '
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_marca_empty(self):
+        field = 'marca'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_modelo_empty(self):
+        field = 'modelo'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_portas_empty(self):
+        field = 'portas'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_portas_not_numeric(self):
+        field = 'portas'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = '20a12b'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_potencia_empty(self):
+        field = 'potencia'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_3_post_create_car_field_potencia_not_numeric(self):
+        field = 'potencia'
+        test_data_json = HandleJsonFile.load()['test_data_create']
+        test_data_json[field] = '20a12b'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}'
+        resp = requests.post(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
     def test_4_get_car_id(self):
         test_car = HandleJsonFile.load()['test_data_create']
         test_car = self.fill_car_missing_fields(car=test_car)
@@ -252,6 +422,176 @@ class MyTest(unittest.TestCase):
         resp = requests.put(url, headers=self.headers, data=json.dumps(test_car_data))
         self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
 
+    def test_5_put_update_car_field_anofabricacao_bigger(self):
+        field = 'ano_fabricacao'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = 12000
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_len_bigger']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_anofabricacao_empty(self):
+        field = 'ano_fabricacao'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_anofabricacao_not_numeric(self):
+        field = 'ano_fabricacao'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = 'kdhsa'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_anomodelo_bigger(self):
+        field = 'ano_modelo'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = 325447
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_len_bigger']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_anomodelo_empty(self):
+        field = 'ano_modelo'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_anomodelo_not_numeric(self):
+        field = 'ano_modelo'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = '22wqjh'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_combustivel_empty(self):
+        field = 'combustivel'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_cor_empty(self):
+        field = 'cor'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_fipecodigo_empty(self):
+        field = 'fipe_codigo'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_lugares_empty(self):
+        field = 'lugares'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_lugares_not_numeric(self):
+        field = 'lugares'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = 'rso12rma'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_marca_empty(self):
+        field = 'marca'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_modelo_empty(self):
+        field = 'modelo'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_portas_empty(self):
+        field = 'portas'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_portas_not_numeric(self):
+        field = 'portas'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = 'castle422'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_potencia_empty(self):
+        field = 'potencia'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_5_put_update_car_field_potencia_not_numeric(self):
+        field = 'potencia'
+        test_data_json = HandleJsonFile.load()['test_data_update_put']
+        test_data_json[field] = 'rso12rma'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.put(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
     def test_5_put_update_car_id_invalid_id(self):
         expected_message = HandleJsonFile.load()['car_id_invalid']
         url = f'{self.base_url}/f3'
@@ -308,6 +648,176 @@ class MyTest(unittest.TestCase):
         resp = requests.patch(url, headers=self.headers, data=json.dumps(test_car_data))
         self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
 
+    def test_6_patch_update_car_field_anofabricacao_bigger(self):
+        field = 'ano_fabricacao'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = 9927421
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_len_bigger']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_anofabricacao_empty(self):
+        field = 'ano_fabricacao'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_anofabricacao_not_numeric(self):
+        field = 'ano_fabricacao'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = 'k ahsd2'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_anomodelo_bigger(self):
+        field = 'ano_modelo'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = 523741
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_len_bigger']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_anomodelo_empty(self):
+        field = 'ano_modelo'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_anomodelo_not_numeric(self):
+        field = 'ano_modelo'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = 'kdhsa'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_combustivel_empty(self):
+        field = 'combustivel'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_cor_empty(self):
+        field = 'cor'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_fipecodigo_empty(self):
+        field = 'fipe_codigo'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_lugares_empty(self):
+        field = 'lugares'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_lugares_not_numeric(self):
+        field = 'lugares'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = 'rso12rma'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_marca_empty(self):
+        field = 'marca'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_modelo_empty(self):
+        field = 'modelo'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_portas_empty(self):
+        field = 'portas'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_portas_not_numeric(self):
+        field = 'portas'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = 'valkyrie'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_potencia_empty(self):
+        field = 'potencia'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = ''
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_empty']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
+    def test_6_patch_update_car_field_potencia_not_numeric(self):
+        field = 'potencia'
+        test_data_json = HandleJsonFile.load()['test_data_update_patch']
+        test_data_json[field] = '20 20'
+        expected_message = HandleJsonFile.load()['check_request_fields']['field_not_numeric']
+        expected_message['message'] = expected_message['message'].replace('##', field)
+        url = f'{self.base_url}/{self.car_id}'
+        resp = requests.patch(url, headers=self.headers, data=json.dumps(test_data_json))
+        self.valid_response_simple(resp=resp, code=400, expected_message=expected_message)
+
     def test_6_patch_update_car_id_invalid_id(self):
         expected_message = HandleJsonFile.load()['car_id_invalid']
         url = f'{self.base_url}/brum1'
@@ -341,4 +851,5 @@ class MyTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(failfast=True, exit=True)
+    # unittest.main(failfast=True, exit=True)
+    unittest.main()
