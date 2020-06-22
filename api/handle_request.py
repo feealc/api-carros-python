@@ -31,13 +31,11 @@ class HandleRequest:
         return ret_dict
 
     @staticmethod
-    def valid_request_fields(body, accept_date_fields=False):
+    def check_request_fields(body, accept_date_fields=False, ignore_content_check=False):
         request_fields = HandleJsonFile.load()['request_fields']
         if accept_date_fields:
             request_fields = HandleJsonFile.load()['response_fields']
         unknown_fields = []
-        ret_dict = None
-
         for field in body:
             if field not in request_fields:
                 unknown_fields.append(field)
@@ -45,8 +43,34 @@ class HandleRequest:
         if len(unknown_fields) > 0:
             ret_dict = HandleJsonFile.load()['car_unknown_field']
             ret_dict['unknown_fields'] = unknown_fields
+            return ret_dict
 
-        return ret_dict
+        if not ignore_content_check:
+            main_ley = 'check_request_fields'
+            for key, value in body.items():
+                # print(f'key [{key}] value [{value}]')
+                if value is not None:
+                    value_str = str(value)
+                    # value empty
+                    if value_str.strip() == "":
+                        ret_dict = HandleJsonFile.load()[main_ley]['field_empty']
+                        ret_dict['message'] = ret_dict['message'].replace('##', key)
+                        return ret_dict
+                    # value not numeric
+                    if key == 'ano_fabricacao' or key == 'ano_modelo' or \
+                            key == 'potencia' or key == 'portas' or key == 'lugares':
+                        if not value_str.isdigit():
+                            ret_dict = HandleJsonFile.load()[main_ley]['field_not_numeric']
+                            ret_dict['message'] = ret_dict['message'].replace('##', key)
+                            return ret_dict
+                    # value bigger
+                    if key == 'ano_fabricacao' or key == 'ano_modelo':
+                        if len(value_str) > 4:
+                            ret_dict = HandleJsonFile.load()[main_ley]['field_len_bigger']
+                            ret_dict['message'] = ret_dict['message'].replace('##', key)
+                            return ret_dict
+
+        return None
 
     @staticmethod
     def build_reset_response():

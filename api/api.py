@@ -55,7 +55,8 @@ def api_all():
         if body is not None:
             if 'order_by' in body:
                 body_fake = {body['order_by']: None}
-                result = HandleRequest.valid_request_fields(body_fake, accept_date_fields=True)
+                result = HandleRequest.check_request_fields(body_fake, accept_date_fields=True,
+                                                            ignore_content_check=True)
                 if result is not None:
                     return send_message(result)
                 order_by_field = body['order_by']
@@ -103,7 +104,7 @@ def api_create():
         if result is not None:
             return send_message(result)
 
-        result = HandleRequest.valid_request_fields(body)
+        result = HandleRequest.check_request_fields(body)
         if result is not None:
             return send_message(result)
 
@@ -138,7 +139,7 @@ def api_id_put_patch(car_id):
         if result is not None:
             return send_message(result)
 
-        result = HandleRequest.valid_request_fields(body)
+        result = HandleRequest.check_request_fields(body)
         if result is not None:
             return send_message(result)
 

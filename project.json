@@ -143,5 +143,19 @@
 		"message": "Campo desconhecido no request",
 		"status_code": 400,
 		"unknown_fields": null
+	},
+	"check_request_fields": {
+		"field_empty": {
+			"message": "Campo ## vazio",
+			"status_code": 400
+		},
+		"field_not_numeric": {
+			"message": "Campo ## não numérico",
+			"status_code": 400
+		},
+		"field_len_bigger": {
+			"message": "Campo ## maior que o esperado (4)",
+			"status_code": 400
+		}
 	}
 }
